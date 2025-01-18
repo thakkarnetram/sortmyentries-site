@@ -1,53 +1,81 @@
 "use client";
 import Head from "next/head";
-import {useEffect} from "react";
+import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 
 export default function Home() {
-    useEffect(() => {
-        const numbersSection = document.getElementById("numbers");
-        const numbers = document.querySelectorAll(".numberItem h3");
-        let hasAnimated = false;
+    const [isClient, setIsClient] = useState(false);
+    const [eventCount, setEventCount] = useState(0);
+    const [concertCount, setConcertCount] = useState(0);
+    const [clubCount, setClubCount] = useState(0);
+    const [otherCount, setOtherCount] = useState(0);
 
-        const animateNumbers = () => {
-            numbers.forEach((number) => {
-                const target = +number.getAttribute("data-target");
-                const increment = target / 100; // Adjust speed
-                let count = 0;
+    useEffect(() => {
+        setIsClient(true); // Ensure this runs only on the client
+    }, []);
+
+    useEffect(() => {
+        if (isClient) {
+            const numbersSection = document.getElementById("numbers");
+            let hasAnimated = false;
+
+            const animateNumbers = () => {
+                const incrementEvent = 100 / 100;
+                const incrementConcert = 30 / 100;
+                const incrementClub = 50 / 100;
+                const incrementOther = 10 / 100;
+                let eventCountValue = 0;
+                let concertCountValue = 0;
+                let clubCountValue = 0;
+                let otherCountValue = 0;
 
                 const updateCount = () => {
-                    if (count < target) {
-                        count += increment;
-                        number.textContent = Math.ceil(count);
-                        setTimeout(updateCount, 12); // Adjust speed
-                    } else {
-                        number.textContent = `${target}+`; // Final value
+                    if (eventCountValue < 100) {
+                        eventCountValue += incrementEvent;
+                        setEventCount(Math.ceil(eventCountValue));
+                    }
+                    if (concertCountValue < 30) {
+                        concertCountValue += incrementConcert;
+                        setConcertCount(Math.ceil(concertCountValue));
+                    }
+                    if (clubCountValue < 50) {
+                        clubCountValue += incrementClub;
+                        setClubCount(Math.ceil(clubCountValue));
+                    }
+                    if (otherCountValue < 10) {
+                        otherCountValue += incrementOther;
+                        setOtherCount(Math.ceil(otherCountValue));
+                    }
+
+                    if (eventCountValue < 100 || concertCountValue < 30 || clubCountValue < 50 || otherCountValue < 10) {
+                        setTimeout(updateCount, 12);
                     }
                 };
 
                 updateCount();
-            });
-        };
+            };
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && !hasAnimated) {
-                    hasAnimated = true;
-                    numbersSection.classList.add("visible");
-                    animateNumbers();
-                }
-            },
-            { threshold: 0.5 }
-        );
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting && !hasAnimated) {
+                        hasAnimated = true;
+                        numbersSection.classList.add("visible");
+                        animateNumbers();
+                    }
+                },
+                { threshold: 0.5 }
+            );
 
-        if (numbersSection) {
-            observer.observe(numbersSection);
+            if (numbersSection) {
+                observer.observe(numbersSection);
+            }
+
+            return () => {
+                observer.disconnect();
+            };
         }
+    }, [isClient]);
 
-        return () => {
-            observer.disconnect();
-        };
-    }, []);
     return (
         <>
             <Head>
@@ -90,19 +118,19 @@ export default function Home() {
 
             <div className={styles.numbers} id="numbers">
                 <div className={styles.numberItem}>
-                    <h3 data-target="100" className={styles.numberTitle}>0</h3>
+                    <h3 className={styles.numberTitle}>{eventCount}+</h3>
                     <p className={styles.numberDescription}>Events Listed</p>
                 </div>
                 <div className={styles.numberItem}>
-                    <h3 data-target="30" className={styles.numberTitle}>0</h3>
+                    <h3 className={styles.numberTitle}>{concertCount}+</h3>
                     <p className={styles.numberDescription}>Concerts</p>
                 </div>
                 <div className={styles.numberItem}>
-                    <h3 data-target="50" className={styles.numberTitle}>0</h3>
+                    <h3 className={styles.numberTitle}>{clubCount}+</h3>
                     <p className={styles.numberDescription}>Clubs</p>
                 </div>
                 <div className={styles.numberItem}>
-                    <h3 data-target="10" className={styles.numberTitle}>0</h3>
+                    <h3 className={styles.numberTitle}>{otherCount}+</h3>
                     <p className={styles.numberDescription}>Others</p>
                 </div>
             </div>
