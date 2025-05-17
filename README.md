@@ -1,3 +1,6 @@
+database diagram = https://github.com/user-attachments/assets/2309d9b0-c8ce-403f-b349-424a0539f8ca
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
